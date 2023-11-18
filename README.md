@@ -65,6 +65,9 @@ var err=request("Divide", _on_request_finished, 50, 10)
 
 For using the client directly in GDScript you can also use the lower level `DBusClient`, which is the underlying implementation used by the node.
 
+### Using system bus
+
+This on default just uses the user bus. If you need system access you can compile with GODOT_DBUS_SYSTEM_LEVEL set. 
 
 ## Credits
 * Template used https://github.com/nathanfranke/gdextension
