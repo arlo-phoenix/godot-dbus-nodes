@@ -1,8 +1,10 @@
 #pragma once
 
-#include <dbus_client.h>
 #include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/classes/thread.hpp>
+
+#include "dbus_client.h"
+#include "dbus_level.h"
 
 using namespace godot;
 
@@ -17,6 +19,7 @@ private:
 	String _destination;
 	String _path;
 	String _interface;
+	DBusLevel::Level _bus_level = DBusLevel::USER;
 
 	/**
 	 * @brief internal request which sends and waits for a response, threaded if _use_threads is set
@@ -56,6 +59,9 @@ public:
 
 	void set_use_threads(const bool p_use_threads);
 	bool get_use_threads() const;
+
+	void set_bus_level(const DBusLevel::Level p_bus_level);
+	DBusLevel::Level get_bus_level() const;
 
 	/**
 	 * @brief Request member, callback, arg1, arg2,... (member and callback are necessary)

@@ -3,6 +3,7 @@
 #include <systemd/sd-bus.h>
 #include <godot_cpp/classes/ref_counted.hpp>
 
+#include "dbus_level.h"
 #include "dbus_message.h"
 
 using namespace godot;
@@ -22,7 +23,7 @@ public:
 	DBusClient();
 	~DBusClient();
 
-	void open();
+	void open(const DBusLevel::Level p_bus_level = DBusLevel::USER);
 	void close();
 	bool is_open() const;
 

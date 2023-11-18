@@ -75,11 +75,7 @@ func _ready() -> void:
 
 `request` is a vararg method which first takes the method name, then a callback and after that all your input arguments to the method. You don't need to close the client again at the end, since it is automatically freed when it goes out of scope.
 
-For using the client directly in GDScript you can also use the lower level `DBusClient`, which is the underlying implementation used by the node.
-
-### Using system bus
-
-This on default just uses the user bus. If you need system access you can compile with GODOT_DBUS_SYSTEM_LEVEL set. 
+For using the client directly in GDScript you can also use the lower level `DBusClient`, which is the underlying implementation used by the node. 
 
 ## Credits
 * Template used https://github.com/nathanfranke/gdextension

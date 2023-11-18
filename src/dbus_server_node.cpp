@@ -1,5 +1,4 @@
 #include "dbus_server_node.h"
-#include "dbus_privilege.h"
 #include "dbus_response.h"
 
 #include <godot_cpp/classes/engine.hpp>
@@ -24,6 +23,9 @@ void DBusServerNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_autostart", "autostart"), &DBusServerNode::set_autostart);
 	ClassDB::bind_method(D_METHOD("get_autostart"), &DBusServerNode::get_autostart);
 
+	ClassDB::bind_method(D_METHOD("set_bus_level", "bus_level"), &DBusServerNode::set_bus_level);
+	ClassDB::bind_method(D_METHOD("get_bus_level"), &DBusServerNode::get_bus_level);
+
 	ClassDB::bind_method(D_METHOD("is_running"), &DBusServerNode::is_running);
 	ClassDB::bind_method(D_METHOD("start"), &DBusServerNode::start);
 	ClassDB::bind_method(D_METHOD("stop"), &DBusServerNode::stop);
@@ -35,6 +37,7 @@ void DBusServerNode::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "interface_name"), "set_interface_name", "get_interface_name");
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "methods", PROPERTY_HINT_ARRAY_TYPE, vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_RESOURCE_TYPE, "DBusMethod")), "set_methods", "get_methods");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "autostart"), "set_autostart", "get_autostart");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "bus_level", PROPERTY_HINT_ENUM, "USER, SYSTEM"), "set_bus_level", "get_bus_level");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "running"), "", "is_running");
 }
 
@@ -124,6 +127,14 @@ bool DBusServerNode::get_autostart() const {
 	return _autostart;
 }
 
+void DBusServerNode::set_bus_level(const DBusLevel::Level p_bus_level) {
+	_bus_level = p_bus_level;
+}
+
+DBusLevel::Level DBusServerNode::get_bus_level() const {
+	return _bus_level;
+}
+
 void DBusServerNode::_set_running(const bool p_running) {
 	_lock.lock();
 	_running = p_running;
@@ -153,7 +164,12 @@ void DBusServerNode::start() {
 	v_table[_v_table_size - 1] = SD_BUS_VTABLE_END;
 
 	int r;
-	r = D_BUS_OPEN(&_bus);
+	if (_bus_level == DBusLevel::SYSTEM) {
+		r = sd_bus_open_system(&_bus);
+	} else if (_bus_level == DBusLevel::USER) {
+		r = sd_bus_open_user(&_bus);
+	}
+
 	ERR_BUS_FAIL("Failed to connect system bus");
 
 	r = sd_bus_add_object_vtable(_bus,

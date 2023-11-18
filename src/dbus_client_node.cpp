@@ -21,6 +21,9 @@ void DBusClientNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_use_threads", "use_threads"), &DBusClientNode::set_use_threads);
 	ClassDB::bind_method(D_METHOD("get_use_threads"), &DBusClientNode::get_use_threads);
 
+	ClassDB::bind_method(D_METHOD("set_bus_level", "bus_level"), &DBusClientNode::set_bus_level);
+	ClassDB::bind_method(D_METHOD("get_bus_level"), &DBusClientNode::get_bus_level);
+
 	{
 		MethodInfo mi;
 		mi.arguments.push_back(PropertyInfo(Variant::STRING, "member"));
@@ -39,6 +42,7 @@ void DBusClientNode::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "interface"), "set_interface", "get_interface");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "autostart"), "set_autostart", "get_autostart");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "use_threads"), "set_use_threads", "get_use_threads");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "bus_level", PROPERTY_HINT_ENUM, "USER, SYSTEM"), "set_bus_level", "get_bus_level");
 }
 
 DBusClientNode::DBusClientNode() {
@@ -88,7 +92,7 @@ String DBusClientNode::get_interface() const {
 }
 
 void DBusClientNode::open() {
-	_client->open();
+	_client->open(_bus_level);
 }
 
 void DBusClientNode::close() {
@@ -117,6 +121,14 @@ void DBusClientNode::set_use_threads(const bool p_use_threads) {
 
 bool DBusClientNode::get_use_threads() const {
 	return _use_threads;
+}
+
+void DBusClientNode::set_bus_level(const DBusLevel::Level p_bus_level) {
+	_bus_level = p_bus_level;
+}
+
+DBusLevel::Level DBusClientNode::get_bus_level() const {
+	return _bus_level;
 }
 
 Error DBusClientNode::request(const Variant **p_args, GDExtensionInt p_arg_count, GDExtensionCallError &error) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dbus_level.h"
 #include "dbus_method.h"
 #include <godot_cpp/classes/mutex.hpp>
 #include <godot_cpp/classes/node.hpp>
@@ -18,6 +19,7 @@ private:
 	CharString _interface_name;
 	Array _methods;
 	bool _autostart;
+	DBusLevel::Level _bus_level = DBusLevel::USER;
 
 	Mutex _lock;
 	bool _running;
@@ -52,6 +54,9 @@ public:
 
 	void set_autostart(const bool p_autostart);
 	bool get_autostart() const;
+
+	void set_bus_level(const DBusLevel::Level p_bus_level);
+	DBusLevel::Level get_bus_level() const;
 
 	bool is_running();
 

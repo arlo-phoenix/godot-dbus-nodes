@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT-0
 
 */
 #include "dbus_client.h"
-#include "dbus_privilege.h"
 
 #define ERR_BUS_FAIL(msg) \
 	ERR_FAIL_COND_MSG(r < 0, String(msg) + ": " + strerror(-r))
@@ -19,7 +18,7 @@ SPDX-License-Identifier: MIT-0
 void DBusClient::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("create_request", "destination", "path", "interface", "member"), &DBusClient::create_request);
 	ClassDB::bind_method(D_METHOD("send_request", "request"), &DBusClient::send_request);
-	ClassDB::bind_method(D_METHOD("open"), &DBusClient::open);
+	ClassDB::bind_method(D_METHOD("open", "bus_level"), &DBusClient::open, DBusLevel::USER);
 	ClassDB::bind_method(D_METHOD("close"), &DBusClient::close);
 	ClassDB::bind_method(D_METHOD("is_open"), &DBusClient::is_open);
 }
@@ -33,8 +32,13 @@ DBusClient::~DBusClient() {
 	}
 }
 
-void DBusClient::open() {
-	int r = D_BUS_OPEN(&_bus);
+void DBusClient::open(const DBusLevel::Level p_bus_level) {
+	int r;
+	if (p_bus_level == DBusLevel::SYSTEM) {
+		r = sd_bus_open_system(&_bus);
+	} else if (p_bus_level == DBusLevel::USER) {
+		r = sd_bus_open_user(&_bus);
+	}
 	ERR_BUS_FAIL("Failed to acquire bus");
 	_open = true;
 }
