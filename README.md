@@ -29,7 +29,7 @@ To add a new method to the server you just need to append the list of methods in
 
 Within your script you can later access e.g. the method at index 0 and set the callback to it inside the _ready function.
 
-```go
+```py
 extends DBusServerNode
 
 func _divide(request: DBusRequest) -> int:
@@ -59,8 +59,18 @@ The Client in this is just directly making calls over DBus and not creating an i
 
 You can set destination, object_path and interface_name inside the editor. To start the client (open the bus) you then call `open`. Afterwards you can send requests to the specified interface
 
-```go
-var err=request("Divide", _on_request_finished, 50, 10)
+```py
+extends DBusClientNode
+
+
+func _on_request_finished(response: DBusMessage):
+	assert(response) #will be None if request failed
+	print(response.read_single(TYPE_FLOAT)) #read response one by one
+
+func _ready() -> void:
+	open()
+	var err=request("Divide", _on_request_finished, 50, 10)
+	assert(err == OK)
 ```
 
 `request` is a vararg method which first takes the method name, then a callback and after that all your input arguments to the method. You don't need to close the client again at the end, since it is automatically freed when it goes out of scope.
