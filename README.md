@@ -1,5 +1,7 @@
 # Godot D-Bus Nodes
 
+<img src="./project/icon.svg" width="100" height="100">
+
 GDExtension that offers simple D-Bus client and server support build on top of libsystemd.
 
 This implementation is very minimal and does not support all specifiers in arguments. If you want full and efficient DBus support I recommend  the C++ bindings under [sdbus-cpp](https://github.com/Kistler-Group/sdbus-cpp) or using libsystemd's DBus implementation directly. 
