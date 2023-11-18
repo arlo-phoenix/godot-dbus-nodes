@@ -63,8 +63,6 @@ void DBusMethod::_bind_methods() {
 	BIND_BITFIELD_FLAG(PROPERTY_EMITS_INVALIDATION);
 	BIND_BITFIELD_FLAG(PROPERTY_EXPLICIT);
 	BIND_BITFIELD_FLAG(SENSITIVE);
-	BIND_BITFIELD_FLAG(ABSOLUTE_OFFSET);
-	BIND_BITFIELD_FLAG(CAPABILITY_MASK);
 
 	ClassDB::bind_method(D_METHOD("set_member", "member"), &DBusMethod::set_member);
 	ClassDB::bind_method(D_METHOD("get_member"), &DBusMethod::get_member);
@@ -84,7 +82,7 @@ void DBusMethod::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "member"), "set_member", "get_member");
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "signature", PROPERTY_HINT_ARRAY_TYPE, vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_RESOURCE_TYPE, "DBusMethodArgument")), "set_signature", "get_signature");
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "result", PROPERTY_HINT_ARRAY_TYPE, vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_RESOURCE_TYPE, "DBusMethodArgument")), "set_result", "get_result");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "flags", PROPERTY_HINT_FLAGS, "deprecated, hidden, unprivileged, method no reply, property const, property emits change, property emits invalidation, property explicit, sensitive, absolute offset, capability mask"), "set_flags", "get_flags");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "flags", PROPERTY_HINT_FLAGS, "deprecated, hidden, unprivileged, method no reply, property const, property emits change, property emits invalidation, property explicit, sensitive"), "set_flags", "get_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::CALLABLE, "callback"), "set_callback", "get_callback");
 }
 
