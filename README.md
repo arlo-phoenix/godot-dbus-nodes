@@ -64,3 +64,9 @@ var err=request("Divide", _on_request_finished, 50, 10)
 `request` is a vararg method which first takes the method name, then a callback and after that all your input arguments to the method. You don't need to close the client again at the end, since it is automatically freed when it goes out of scope.
 
 For using the client directly in GDScript you can also use the lower level `DBusClient`, which is the underlying implementation used by the node.
+
+
+## Credits
+* Template used https://github.com/nathanfranke/gdextension
+* Good tutorial https://0pointer.net/blog/the-new-sd-bus-api-of-systemd.html
+* libsystemd https://github.com/systemd/systemd
