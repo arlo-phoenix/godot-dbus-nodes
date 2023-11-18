@@ -36,6 +36,11 @@ jobs:
           python -m pip install scons
           scons --version
 
+      - name: Install libsystemd
+        shell: bash
+        run: |
+          sudo apt-get install libsystemd-dev
+
       - name: Checkout project
         uses: actions/checkout@v2
         with:
