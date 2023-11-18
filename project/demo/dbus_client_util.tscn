@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://c670mp7v4rfln"]
+
+[ext_resource type="Script" path="res://demo/dbus_client_util.gd" id="1_lk0kj"]
+
+[node name="DBusClientUtil" type="DBusClientNode"]
+destination = "org.freedesktop.portal.Desktop"
+path = "/org/freedesktop/portal/desktop"
+interface = "org.freedesktop.portal.Desktop"
+autostart = false
+script = ExtResource("1_lk0kj")

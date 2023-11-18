@@ -1,5 +1,5 @@
 #include "dbus_server_node.h"
-
+#include "dbus_privilege.h"
 #include "dbus_response.h"
 
 #include <godot_cpp/classes/engine.hpp>
@@ -46,22 +46,6 @@ DBusServerNode::~DBusServerNode() {
 	if (_running) {
 		stop();
 	}
-}
-
-void DBusServerNode::stop() {
-	ERR_FAIL_COND_MSG(!_running, "Already stopped");
-	_set_running(false);
-	if (_thread.is_alive()) {
-		_thread.wait_to_finish();
-	}
-	sd_bus_slot_unref(_slot);
-	sd_bus_unref(_bus);
-	_slot = nullptr;
-	_bus = nullptr;
-
-	delete[] v_table;
-	v_table = nullptr;
-	_v_table_size = 0;
 }
 
 void DBusServerNode::_notification(int p_what) {
@@ -155,6 +139,7 @@ bool DBusServerNode::is_running() {
 
 void DBusServerNode::start() {
 	//since start and end + 2
+	ERR_FAIL_COND_MSG(_running, "Already running");
 	_v_table_size = _methods.size() + 2;
 	v_table = new sd_bus_vtable[_v_table_size];
 	v_table[0] = SD_BUS_VTABLE_START(0);
@@ -168,7 +153,7 @@ void DBusServerNode::start() {
 	v_table[_v_table_size - 1] = SD_BUS_VTABLE_END;
 
 	int r;
-	r = sd_bus_open_user(&_bus);
+	r = D_BUS_OPEN(&_bus);
 	ERR_BUS_FAIL("Failed to connect system bus");
 
 	r = sd_bus_add_object_vtable(_bus,
@@ -188,6 +173,22 @@ void DBusServerNode::start() {
 	_running = true;
 }
 
+void DBusServerNode::stop() {
+	ERR_FAIL_COND_MSG(!_running, "Already stopped");
+	_set_running(false);
+	if (_thread.is_alive()) {
+		_thread.wait_to_finish();
+	}
+	sd_bus_slot_unref(_slot);
+	sd_bus_unref(_bus);
+	_slot = nullptr;
+	_bus = nullptr;
+
+	delete[] v_table;
+	v_table = nullptr;
+	_v_table_size = 0;
+}
+
 int DBusServerNode::_server_callback_wrapper(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
 	DBusServerNode *server = static_cast<DBusServerNode *>(userdata);
 	//callback is static so use userdata pointer to call object callback
@@ -195,8 +196,8 @@ int DBusServerNode::_server_callback_wrapper(sd_bus_message *m, void *userdata, 
 }
 
 int DBusServerNode::_server_callback(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
-	Ref<DBusResponse> message = DBusResponse::from_internal(m, userdata, ret_error);
-	//call callback, DBusResponse contains all required data to read/respond
+	Ref<DBusRequest> message = DBusRequest::from_internal(m, userdata, ret_error);
+	//call callback, DBusRequest contains all required data to read/respond
 	if (!_method_map.has(message->get_member())) {
 		return 0;
 	}

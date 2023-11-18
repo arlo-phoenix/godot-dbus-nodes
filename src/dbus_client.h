@@ -13,10 +13,6 @@ private:
 	sd_bus *_bus = nullptr;
 	sd_bus_error _error = SD_BUS_ERROR_NULL;
 
-	String _destination;
-	String _path;
-	String _interface;
-
 	bool _open = false;
 
 protected:
@@ -26,18 +22,10 @@ public:
 	DBusClient();
 	~DBusClient();
 
-	void set_destination(const String &p_destination);
-	String get_destination() const;
-
-	void set_path(const String &p_path);
-	String get_path() const;
-
-	void set_interface(const String &p_interface);
-	String get_interface() const;
-
 	void open();
 	void close();
+	bool is_open() const;
 
-	Ref<DBusMessage> create_request(const String &p_member);
+	Ref<DBusMessage> create_request(const String &p_destination, const String &p_path, const String &p_interface, const String &p_member);
 	Ref<DBusMessage> send_request(const Ref<DBusMessage> &p_request);
 };

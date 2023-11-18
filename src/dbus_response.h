@@ -8,8 +8,8 @@ using namespace godot;
 #include "dbus_method.h"
 #include "systemd/sd-bus.h"
 
-class DBusResponse : public RefCounted {
-	GDCLASS(DBusResponse, RefCounted)
+class DBusRequest : public RefCounted {
+	GDCLASS(DBusRequest, RefCounted)
 private:
 	Ref<DBusMessage> _message;
 	void *_userdata;
@@ -34,8 +34,8 @@ public:
 	 * @param p_result Array<DBusMethodArgument>
 	 * @return Ref<DBusMessage>
 	 */
-	static Ref<DBusResponse> from_internal(sd_bus_message *m, void *userdata, sd_bus_error *ret_error);
-	DBusResponse();
+	static Ref<DBusRequest> from_internal(sd_bus_message *m, void *userdata, sd_bus_error *ret_error);
+	DBusRequest();
 	void set_internal_message(sd_bus_message *p_message);
 	void set_userdata(void *p_userdata);
 	void set_bus_error(sd_bus_error *p_ret_error);

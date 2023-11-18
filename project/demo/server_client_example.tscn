@@ -1,7 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://c7u64tpv6byvb"]
+[gd_scene load_steps=14 format=3 uid="uid://c7u64tpv6byvb"]
 
 [ext_resource type="Script" path="res://demo/dbus_server_example.gd" id="1_jyovi"]
 [ext_resource type="Script" path="res://demo/dbus_client_example.gd" id="2_ik254"]
+[ext_resource type="Script" path="res://demo/dbus_client_node_example.gd" id="3_pfkpg"]
 
 [sub_resource type="DBusMethodArgument" id="DBusMethodArgument_7xm51"]
 
@@ -39,13 +40,23 @@ result = Array[DBusMethodArgument]([SubResource("DBusMethodArgument_rishs")])
 object_path = "/net/poettering/Calculator"
 interface_name = "net.poettering.Calculator"
 methods = [SubResource("DBusMethod_pftgm"), SubResource("DBusMethod_1nn3q"), SubResource("DBusMethod_02o38")]
+autostart = true
 script = ExtResource("1_jyovi")
 
 [node name="DBusClient" type="Node" parent="."]
 script = ExtResource("2_ik254")
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 2.0
+one_shot = true
 autostart = true
 
+[node name="DBusClientNode" type="DBusClientNode" parent="."]
+destination = "net.poettering.Calculator"
+path = "/net/poettering/Calculator"
+interface = "net.poettering.Calculator"
+autostart = false
+use_threads = true
+script = ExtResource("3_pfkpg")
+
 [connection signal="timeout" from="Timer" to="DBusClient" method="_on_timer_timeout"]
+[connection signal="timeout" from="Timer" to="DBusClientNode" method="_on_timer_timeout"]

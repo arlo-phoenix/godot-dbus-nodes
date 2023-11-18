@@ -11,14 +11,14 @@ var num2=0
 func test_request():
 	var client=DBusClient.new()
 	
-	client.destination="net.poettering.Calculator"
-	client.path="/net/poettering/Calculator"
-	client.interface="net.poettering.Calculator"
-	
+	var destination="net.poettering.Calculator"
+	var path="/net/poettering/Calculator"
+	var interface="net.poettering.Calculator"
 	var member="Multiply"
+	
 	client.open()
 	
-	var request_message=client.create_request(member)
+	var request_message=client.create_request(destination, path, interface, member)
 	request_message.append(num1)
 	request_message.append(num2)
 	var response_message=client.send_request(request_message)

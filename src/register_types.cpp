@@ -7,6 +7,7 @@
 #include <godot_cpp/godot.hpp>
 
 #include "dbus_client.h"
+#include "dbus_client_node.h"
 #include "dbus_message.h"
 #include "dbus_method.h"
 #include "dbus_response.h"
@@ -17,11 +18,12 @@ using namespace godot;
 void gdextension_initialize(ModuleInitializationLevel p_level) {
 	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE) {
 		ClassDB::register_class<DBusMessage>();
-		ClassDB::register_class<DBusResponse>();
+		ClassDB::register_class<DBusRequest>();
 		ClassDB::register_class<DBusMethodArgument>();
 		ClassDB::register_class<DBusMethod>();
 		ClassDB::register_class<DBusServerNode>();
 		ClassDB::register_class<DBusClient>();
+		ClassDB::register_class<DBusClientNode>();
 	}
 }
 

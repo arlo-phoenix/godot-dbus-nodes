@@ -1,25 +1,25 @@
 #include "dbus_response.h"
 #include "dbus_method.h"
 
-void DBusResponse::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("read_all"), &DBusResponse::read_all);
-	ClassDB::bind_method(D_METHOD("reply", "args"), &DBusResponse::reply);
-	ClassDB::bind_method(D_METHOD("set_error", "name", "message"), &DBusResponse::set_error);
+void DBusRequest::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("read_all"), &DBusRequest::read_all);
+	ClassDB::bind_method(D_METHOD("reply", "args"), &DBusRequest::reply);
+	ClassDB::bind_method(D_METHOD("set_error", "name", "message"), &DBusRequest::set_error);
 
-	ClassDB::bind_method(D_METHOD("set_response_code", "response_code"), &DBusResponse::set_response_code);
-	ClassDB::bind_method(D_METHOD("get_response_code"), &DBusResponse::get_response_code);
-	ClassDB::bind_method(D_METHOD("is_valid"), &DBusResponse::is_valid);
+	ClassDB::bind_method(D_METHOD("set_response_code", "response_code"), &DBusRequest::set_response_code);
+	ClassDB::bind_method(D_METHOD("get_response_code"), &DBusRequest::get_response_code);
+	ClassDB::bind_method(D_METHOD("is_valid"), &DBusRequest::is_valid);
 
-	ClassDB::bind_method(D_METHOD("get_message"), &DBusResponse::get_message);
-	ClassDB::bind_method(D_METHOD("read"), &DBusResponse::read_all);
-	ClassDB::bind_method(D_METHOD("read_single", "type"), &DBusResponse::read_single);
+	ClassDB::bind_method(D_METHOD("get_message"), &DBusRequest::get_message);
+	ClassDB::bind_method(D_METHOD("read"), &DBusRequest::read_all);
+	ClassDB::bind_method(D_METHOD("read_single", "type"), &DBusRequest::read_single);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "response_code"), "set_response_code", "get_response_code");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "message"), "", "get_message");
 }
 
-Ref<DBusResponse> DBusResponse::from_internal(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
-	Ref<DBusResponse> message;
+Ref<DBusRequest> DBusRequest::from_internal(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+	Ref<DBusRequest> message;
 	message.instantiate();
 	message->set_internal_message(m);
 	message->set_userdata(userdata);
@@ -28,31 +28,31 @@ Ref<DBusResponse> DBusResponse::from_internal(sd_bus_message *m, void *userdata,
 	return message;
 }
 
-DBusResponse::DBusResponse() :
+DBusRequest::DBusRequest() :
 		_message(nullptr), _userdata(nullptr), _ret_error(nullptr), _response_code(0) {
 }
 
-void DBusResponse::set_internal_message(sd_bus_message *p_message) {
+void DBusRequest::set_internal_message(sd_bus_message *p_message) {
 	_message = DBusMessage::from_internal(p_message);
 }
 
-void DBusResponse::set_userdata(void *p_userdata) {
+void DBusRequest::set_userdata(void *p_userdata) {
 	_userdata = p_userdata;
 }
 
-void DBusResponse::set_bus_error(sd_bus_error *p_ret_error) {
+void DBusRequest::set_bus_error(sd_bus_error *p_ret_error) {
 	_ret_error = p_ret_error;
 }
 
-void DBusResponse::set_signature(const Array &p_signature) {
+void DBusRequest::set_signature(const Array &p_signature) {
 	_signature = p_signature;
 }
 
-void DBusResponse::set_result(const Array &p_result) {
+void DBusRequest::set_result(const Array &p_result) {
 	_result = p_result;
 }
 
-Array DBusResponse::read_all() {
+Array DBusRequest::read_all() {
 	Array input_arguments;
 	input_arguments.resize(_signature.size());
 
@@ -63,11 +63,11 @@ Array DBusResponse::read_all() {
 	return input_arguments;
 }
 
-Variant DBusResponse::read_single(const Variant::Type p_type) {
+Variant DBusRequest::read_single(const Variant::Type p_type) {
 	return _message->read_single(p_type);
 }
 
-void DBusResponse::reply(const Array &args) {
+void DBusRequest::reply(const Array &args) {
 	ERR_FAIL_COND(args.size() != _result.size());
 	InternalDBusMessageContainer reply;
 
@@ -87,26 +87,26 @@ void DBusResponse::reply(const Array &args) {
 	ERR_FAIL_COND_MSG(_response_code < 0, "Failed to send message");
 }
 
-void DBusResponse::set_error(const String &p_name, const String &p_message) {
+void DBusRequest::set_error(const String &p_name, const String &p_message) {
 	sd_bus_error_set_const(_ret_error, p_name.utf8().get_data(), p_message.utf8().get_data());
 }
 
-int DBusResponse::get_response_code() const {
+int DBusRequest::get_response_code() const {
 	return _response_code;
 }
 
-void DBusResponse::set_response_code(const int p_response_code) {
+void DBusRequest::set_response_code(const int p_response_code) {
 	_response_code = p_response_code;
 }
 
-Ref<DBusMessage> DBusResponse::get_message() const {
+Ref<DBusMessage> DBusRequest::get_message() const {
 	return _message;
 }
 
-bool DBusResponse::is_valid() const {
+bool DBusRequest::is_valid() const {
 	return _response_code >= 0;
 }
 
-String DBusResponse::get_member() const {
+String DBusRequest::get_member() const {
 	return _message->get_member();
 }

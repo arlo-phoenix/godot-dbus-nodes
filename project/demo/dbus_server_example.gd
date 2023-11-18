@@ -2,30 +2,30 @@ extends DBusServerNode
 
 @onready var client=$"../DBusClient"
 
-func _multiply(message: DBusResponse) -> int:
-	var message_signature=message.read()
+func _multiply(request: DBusRequest) -> int:
+	var message_signature=request.read()
 	var response=Array()
 	response.append(message_signature[0] * message_signature[1])
-	message.reply(response)
+	request.reply(response)
 	return 0
 	
-func _empty(message: DBusResponse) -> int:
+func _empty(request: DBusRequest) -> int:
 	var response=Array()
-	print("do shit")
+	print("do sth")
 	response.append(true)
-	message.reply(response)
+	request.reply(response)
 	return 0
 	
-func _divide(message: DBusResponse) -> int:
-	var message_signature=message.read()
+func _divide(request: DBusRequest) -> int:
+	var message_signature=request.read()
 	var num1:float=message_signature[0]
 	var num2:float=message_signature[1]
 	if num2==0:
-		message.set_error("net.poettering.DivisionByZero", "Division by zero not allowed")
+		request.set_error("net.poettering.DivisionByZero", "Division by zero not allowed")
 		return -ERR_INVALID_PARAMETER
 	var response=Array()
 	response.append(num1/num2)
-	message.reply(response)
+	request.reply(response)
 	return 0
 
 func _ready() -> void:
