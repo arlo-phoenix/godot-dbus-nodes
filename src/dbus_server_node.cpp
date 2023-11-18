@@ -38,7 +38,7 @@ void DBusServerNode::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "methods", PROPERTY_HINT_ARRAY_TYPE, vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_RESOURCE_TYPE, "DBusMethod")), "set_methods", "get_methods");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "autostart"), "set_autostart", "get_autostart");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "bus_level", PROPERTY_HINT_ENUM, "USER, SYSTEM"), "set_bus_level", "get_bus_level");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "running"), "", "is_running");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "running", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY), "", "is_running");
 }
 
 DBusServerNode::DBusServerNode() :
