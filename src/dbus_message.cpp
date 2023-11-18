@@ -92,6 +92,7 @@ Array DBusMessage::read_all_arguments(const TypedArray<DBusMethodArgument> &p_ar
 		const Ref<DBusMethodArgument> &arg = p_args[i];
 		ret[i] = read_single_argument(arg);
 	}
+	return ret;
 }
 
 void DBusMessage::append(const Variant &p_value) {
