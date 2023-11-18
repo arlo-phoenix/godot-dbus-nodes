@@ -1,0 +1,51 @@
+[gd_scene load_steps=13 format=3 uid="uid://c7u64tpv6byvb"]
+
+[ext_resource type="Script" path="res://demo/dbus_server_example.gd" id="1_jyovi"]
+[ext_resource type="Script" path="res://demo/dbus_client_example.gd" id="2_ik254"]
+
+[sub_resource type="DBusMethodArgument" id="DBusMethodArgument_7xm51"]
+
+[sub_resource type="DBusMethodArgument" id="DBusMethodArgument_fdtwg"]
+
+[sub_resource type="DBusMethodArgument" id="DBusMethodArgument_1va1p"]
+
+[sub_resource type="DBusMethod" id="DBusMethod_pftgm"]
+member = "Multiply"
+signature = Array[DBusMethodArgument]([SubResource("DBusMethodArgument_fdtwg"), SubResource("DBusMethodArgument_1va1p")])
+result = Array[DBusMethodArgument]([SubResource("DBusMethodArgument_7xm51")])
+
+[sub_resource type="DBusMethodArgument" id="DBusMethodArgument_ejhsr"]
+type = 1
+
+[sub_resource type="DBusMethod" id="DBusMethod_1nn3q"]
+member = "empty"
+result = Array[DBusMethodArgument]([SubResource("DBusMethodArgument_ejhsr")])
+
+[sub_resource type="DBusMethodArgument" id="DBusMethodArgument_rishs"]
+type = 3
+
+[sub_resource type="DBusMethodArgument" id="DBusMethodArgument_hrxsp"]
+
+[sub_resource type="DBusMethodArgument" id="DBusMethodArgument_ap402"]
+
+[sub_resource type="DBusMethod" id="DBusMethod_02o38"]
+member = "Divide"
+signature = Array[DBusMethodArgument]([SubResource("DBusMethodArgument_hrxsp"), SubResource("DBusMethodArgument_ap402")])
+result = Array[DBusMethodArgument]([SubResource("DBusMethodArgument_rishs")])
+
+[node name="Scene" type="Node"]
+
+[node name="DBusServer" type="DBusServerNode" parent="."]
+object_path = "/net/poettering/Calculator"
+interface_name = "net.poettering.Calculator"
+methods = [SubResource("DBusMethod_pftgm"), SubResource("DBusMethod_1nn3q"), SubResource("DBusMethod_02o38")]
+script = ExtResource("1_jyovi")
+
+[node name="DBusClient" type="Node" parent="."]
+script = ExtResource("2_ik254")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[connection signal="timeout" from="Timer" to="DBusClient" method="_on_timer_timeout"]
