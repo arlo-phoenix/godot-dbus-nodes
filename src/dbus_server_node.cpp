@@ -31,14 +31,13 @@ void DBusServerNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("stop"), &DBusServerNode::stop);
 
 	ClassDB::bind_method(D_METHOD("_server_thread_loop"), &DBusServerNode::_server_thread_loop);
-	ClassDB::bind_method(D_METHOD("_process_bus"), &DBusServerNode::_process_bus);
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "object_path"), "set_object_path", "get_object_path");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "interface_name"), "set_interface_name", "get_interface_name");
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "methods", PROPERTY_HINT_ARRAY_TYPE, vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_RESOURCE_TYPE, "DBusMethod")), "set_methods", "get_methods");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "autostart"), "set_autostart", "get_autostart");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "bus_level", PROPERTY_HINT_ENUM, "USER, SYSTEM"), "set_bus_level", "get_bus_level");
-	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "running", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_READ_ONLY), "", "is_running");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "running"), "", "is_running");
 }
 
 DBusServerNode::DBusServerNode() :
@@ -68,7 +67,7 @@ void DBusServerNode::_server_thread_loop() {
 	const uint64_t BUS_WAIT_TIME = 50000; //0.5s
 	while (is_running()) {
 		//do processing on main thread, since need to wait for callback anyways and sometimes this outputs notifications which crashes outside of the main thread
-		r = call_deferred("_process_bus");
+		r = sd_bus_process(_bus, NULL);
 		ERR_BUS_FAIL("Failed to process bus");
 
 		if (r > 0) //if processed try to process another one without waiting
@@ -85,10 +84,6 @@ void DBusServerNode::_server_thread_loop() {
 			}
 		}
 	}
-}
-
-int DBusServerNode::_process_bus() {
-	return sd_bus_process(_bus, NULL);
 }
 
 // Setter and Getter for _object_path
@@ -185,16 +180,14 @@ void DBusServerNode::start() {
 
 	r = sd_bus_request_name(_bus, _interface_name, 0);
 	ERR_BUS_FAIL("Failed to acquire service name " + String(_interface_name));
-	_thread.start(Callable(this, "_server_thread_loop"));
+	_thread = std::thread(&DBusServerNode::_server_thread_loop, this);
 	_running = true;
 }
 
 void DBusServerNode::stop() {
 	ERR_FAIL_COND_MSG(!_running, "Already stopped");
 	_set_running(false);
-	if (_thread.is_alive()) {
-		_thread.wait_to_finish();
-	}
+	_thread.join();
 	sd_bus_slot_unref(_slot);
 	sd_bus_unref(_bus);
 	_slot = nullptr;

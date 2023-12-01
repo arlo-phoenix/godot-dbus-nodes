@@ -4,9 +4,11 @@
 #include "dbus_method.h"
 #include <godot_cpp/classes/mutex.hpp>
 #include <godot_cpp/classes/node.hpp>
-#include <godot_cpp/classes/thread.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/templates/hash_map.hpp>
+
+#include <mutex>
+#include <thread>
 
 using namespace godot;
 
@@ -14,14 +16,14 @@ class DBusServerNode : public Node {
 	GDCLASS(DBusServerNode, Node);
 
 private:
-	Thread _thread;
+	std::thread _thread;
 	CharString _object_path;
 	CharString _interface_name;
 	Array _methods;
 	bool _autostart;
 	DBusLevel::Level _bus_level = DBusLevel::USER;
 
-	Mutex _lock;
+	std::mutex _lock;
 	bool _running;
 
 	HashMap<String, Ref<DBusMethod>> _method_map;
@@ -32,7 +34,6 @@ private:
 	int _v_table_size;
 
 	void _server_thread_loop();
-	int _process_bus();
 	void _set_running(const bool p_running);
 
 protected:

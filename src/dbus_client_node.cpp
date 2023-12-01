@@ -96,8 +96,8 @@ void DBusClientNode::open() {
 }
 
 void DBusClientNode::close() {
-	if (_thread.is_started()) {
-		_thread.wait_to_finish();
+	if (_thread_running) {
+		_thread.join();
 	}
 
 	_client->close();
@@ -156,9 +156,10 @@ Error DBusClientNode::request(const Variant **p_args, GDExtensionInt p_arg_count
 	}
 	const Callable callback = *p_args[1];
 
-	if (_use_threads && _thread.is_alive()) {
-		_thread.wait_to_finish();
+	if (_thread_running) {
+		_thread.join();
 	}
+	_thread_running = true;
 
 	Ref<DBusMessage> request_message = _client->create_request(_destination,
 			_path,
@@ -170,9 +171,9 @@ Error DBusClientNode::request(const Variant **p_args, GDExtensionInt p_arg_count
 	}
 
 	if (_use_threads) {
-		Callable async_request = Callable(this, "_request");
-		async_request = async_request.bind(request_message, callback);
-		_thread.start(async_request);
+		_thread = std::thread([this, request_message, callback]() {
+			_request(request_message, callback);
+		});
 	} else {
 		_request(request_message, callback);
 	}

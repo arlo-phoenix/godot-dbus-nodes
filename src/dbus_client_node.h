@@ -1,7 +1,8 @@
 #pragma once
 
 #include <godot_cpp/classes/node.hpp>
-#include <godot_cpp/classes/thread.hpp>
+
+#include <thread>
 
 #include "dbus_client.h"
 #include "dbus_level.h"
@@ -28,7 +29,8 @@ private:
 	 * @param callback
 	 */
 	void _request(const Ref<DBusMessage> &p_request, Callable callback);
-	Thread _thread;
+	std::thread _thread;
+	bool _thread_running = false;
 	bool _autostart = true;
 	bool _use_threads = false;
 
