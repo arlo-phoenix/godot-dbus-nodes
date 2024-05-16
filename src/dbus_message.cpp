@@ -101,7 +101,7 @@ void DBusMessage::append(const Variant &p_value) {
 		APPEND_VARIANT(INT, int64_t)
 		APPEND_VARIANT(FLOAT, double)
 		case Variant::Type::STRING: {
-			_r = sd_bus_message_append_basic(_message, p_value.get_type(), String(p_value).utf8().get_data());
+			_r = sd_bus_message_append_basic(_message, variant_to_specifier(p_value.get_type()), String(p_value).utf8().get_data());
 			break;
 		}
 		default:
