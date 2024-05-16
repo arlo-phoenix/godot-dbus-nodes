@@ -108,7 +108,7 @@ void DBusMessage::append(const Variant &p_value) {
 			ERR_FAIL_MSG("Unsupported type");
 			break;
 	}
-	ERR_FAIL_COND_MSG(_r < 0, "Failed to append value");
+	ERR_FAIL_COND_MSG(_r < 0, String("Failed to append value: ") + strerror(-_r));
 }
 
 void DBusMessage::append_all(const Array &p_values) {
