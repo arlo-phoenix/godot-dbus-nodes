@@ -101,14 +101,14 @@ void DBusMessage::append(const Variant &p_value) {
 		APPEND_VARIANT(INT, int64_t)
 		APPEND_VARIANT(FLOAT, double)
 		case Variant::Type::STRING: {
-			_r = sd_bus_message_append_basic(_message, p_value.get_type(), String(p_value).utf8().get_data());
+			_r = sd_bus_message_append_basic(_message, variant_to_specifier(p_value.get_type()), String(p_value).utf8().get_data());
 			break;
 		}
 		default:
 			ERR_FAIL_MSG("Unsupported type");
 			break;
 	}
-	ERR_FAIL_COND_MSG(_r < 0, "Failed to append value");
+	ERR_FAIL_COND_MSG(_r < 0, String("Failed to append value: ") + strerror(-_r));
 }
 
 void DBusMessage::append_all(const Array &p_values) {
